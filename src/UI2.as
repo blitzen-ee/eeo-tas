@@ -69,6 +69,8 @@ package  {
 	
 	import flash.external.ExternalInterface;
 	
+	import tas.TASGlobal;
+	
 	public class UI2 extends Sprite{
 		
 		private var timeLabel:Label;
@@ -1551,8 +1553,9 @@ package  {
 				base.showInfo2("System Message", "You are located at " + x + "x" + y);
 			}
 			else if (cmdName == "/fps" || cmdName == "/info") {
-				if (Global.debug_stats)
+				if (Global.debug_stats) {
 					Global.debug_stats.visible = !Global.debug_stats.visible;
+				}
 			}
 			else if (cmdName == "/starttrial") {
 				//if (trialsMode) Global.base.SystemSay("You are already in time trials mode.", "* System");
@@ -2082,6 +2085,45 @@ package  {
 						break;
 					default:
 						base.showInfo2("System Message", "Invalid effect.");
+						break;
+				}
+			}
+			else if (cmdName == "/tas") {
+				if (cmd.length < 2) {
+					base.showInfo2("System Message", "Please enter a command after /tas.");
+					return;
+				}
+				
+				switch (cmd[1]) {
+					case "tick":
+						TASGlobal.ticksEnabled = !TASGlobal.ticksEnabled;
+						break;
+					case "state":
+						if (cmd.length < 3) {
+							base.showInfo2("System Message", "Must enter save or load.");
+							return;
+						}
+						if (cmd[2] == "save") {
+							
+						}
+						else if (cmd[2] == "load") {
+							
+						}
+						else {
+							base.showInfo2("System Message", "Usage: /tas state <save or load> <0-9>");
+							return;
+						}
+						break;
+					case "start":
+						break;
+					case "end":
+						break;
+					case "load":
+						break;
+					case "play":
+						break;
+					default:
+						base.showInfo2("System Message", "Invalid TAS command.");
 						break;
 				}
 			}

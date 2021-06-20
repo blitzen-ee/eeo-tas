@@ -69,7 +69,7 @@ package ui {
 			add("Everybody Edits Offline");
 			add("FPS", lastFps.toString());
 			add("Position", "(" + (state.player.x / 16).toFixed(3) + ", " + (state.player.y / 16).toFixed(3) + ")");
-			add("Velocity","(" + this.state.player.speedX.toFixed(15) + ", " + this.state.player.speedY.toFixed(15) + ")");
+			add("Velocity","(" + this.state.player.speedX.toFixed(5) + ", " + this.state.player.speedY.toFixed(5) + ")");
 			add("Time", (state.player.ticks / 100).toFixed(2) + "s");
 			
 			if (Global.reportTextTest != "") 

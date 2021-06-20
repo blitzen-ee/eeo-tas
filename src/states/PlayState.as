@@ -44,6 +44,8 @@
 	import ui.HoverLabel;
 	import ui.Tile;
 	
+	import tas.TASGlobal;
+	
 	public class PlayState extends BlState
 	{
 		[Embed(source="/../media/death_count_icon.png")] private static var DeathIcon:Class;
@@ -523,6 +525,8 @@
 		private var pastT:Number = new Date().time;
 		
 		public override function tick():void {
+			if (TASGlobal.ticksEnabled) {
+				
 			Global.base.ui2instance.tick();
 			
 			var old:Number = world.showCoinGate;
@@ -754,6 +758,7 @@
 			}
 			playerOverlaps();
 			super.tick()
+			}
 		}
 		
 		private function getLayerFromId(id:int):int {
