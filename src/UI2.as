@@ -1,6 +1,7 @@
 package  {
 	import blitter.Bl;
 	import blitter.BlText;
+	import flash.net.FileReference;
 	import flash.utils.getTimer;
 	import sample.ui.components.Label;
 	import ui.campaigns.CampaignTrialDone;
@@ -70,8 +71,11 @@ package  {
 	import flash.external.ExternalInterface;
 	
 	import tas.TASGlobal;
+	import tas.TASSaveState;
 	
 	public class UI2 extends Sprite{
+		
+		private var saveStates:TASSaveState = new TASSaveState(); // change this to an array later
 		
 		private var timeLabel:Label;
 		
@@ -2088,44 +2092,72 @@ package  {
 						break;
 				}
 			}
-			else if (cmdName == "/tas") {
+			else if (cmdName == "/tick") {
+				TASGlobal.ticksEnabled = !TASGlobal.ticksEnabled;
+			}
+			else if (cmdName == "/state") {
 				if (cmd.length < 2) {
-					base.showInfo2("System Message", "Please enter a command after /tas.");
+					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");
 					return;
 				}
 				
-				switch (cmd[1]) {
-					case "tick":
-						TASGlobal.ticksEnabled = !TASGlobal.ticksEnabled;
-						break;
-					case "state":
-						if (cmd.length < 3) {
-							base.showInfo2("System Message", "Must enter save or load.");
-							return;
-						}
-						if (cmd[2] == "save") {
-							
-						}
-						else if (cmd[2] == "load") {
-							
-						}
-						else {
-							base.showInfo2("System Message", "Usage: /tas state <save or load> <0-9>");
-							return;
-						}
-						break;
-					case "start":
-						break;
-					case "end":
-						break;
-					case "load":
-						break;
-					case "play":
-						break;
-					default:
-						base.showInfo2("System Message", "Invalid TAS command.");
-						break;
+				if (cmd[1] == "save") {
+					saveStates.save();
 				}
+				else if (cmd[1] == "load") {
+					saveStates.load();
+				}
+				else {
+					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");
+					return;
+				}
+			}
+			else if (cmdName == "/record") {
+				if (cmd.length < 2) {
+					base.showInfo2("System Message", "usage: /record <start or end>");
+					return;
+				}
+				
+				if (cmd[1] == "start") {
+					// create a buffer to store user inputs
+					TASGlobal.userInputs = new ByteArray();
+					base.showInfo2("System Message", "recording user inputs");
+					return;
+				}
+				else if (cmd[1] == "end") {
+					// save the buffer to a file
+					
+					if (TASGlobal.userInputs == null) {
+						base.showInfo2("System Message", "use /record start to start recording user inputs");
+						return;
+					}
+					
+					if (TASGlobal.userInputs.length == 0) {
+						base.showInfo2("System Message", "record inputs by pressing shift + c");
+						return;
+					}
+					
+					try {
+						var fileReference:FileReference = new FileReference();
+						var data:ByteArray = new ByteArray();
+						data.writeBytes(TASGlobal.userInputs, 0, TASGlobal.userInputs.length);
+						
+						fileReference.save(data, "inputs.eetas");
+					}
+					catch (e:Error) {
+						
+					}
+				}
+				else {
+					base.showInfo2("System Message", "usage: /record <start or end>");
+					return;
+				}
+			}
+			else if (cmdName == "/loadtas") {
+				
+			}
+			else if (cmdName == "/playtas") {
+				
 			}
 			else {
 				base.showInfo2("System Message", "The command `" + cmdName + "` does not exist.");

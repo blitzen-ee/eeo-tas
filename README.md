@@ -4,19 +4,16 @@ Everybody Edits: Offline (EEO) is a recreation of Everybody Edits (EE), adapted 
 ## About
 eeo-tas is a tool assisted speedrun client for ee-offline
 
-## Changes
-* /fps now displays velocity
-
 ## Features
 ## commands
-All commands start with /tas 
-* /tas tick: toggle game ticks on or off 
-* /tas state save <0-9>: save a game state
-* /tas state load <0-9>: load a game state 
-* /tas start: start recording user inputs
-* /tas end: stop recording user inputs
-* /tas load: load a .eetas file for replay 
-* /tas play: play the loaded .eetas file
+* /fps: same as old command but now shows velocity
+* /tick: toggle game ticks on or off 
+* /state save <0-9>: save a game state
+* /state load <0-9>: load a game state 
+* /record start: start input recording
+* /record end: stop input recording
+* /loadtas: load a .eetas file for replay 
+* /playtas: play the loaded .eetas file
 
 ## Work flow
 1. enter a world you want to create a TAS for. This can either be a campaign or custom level.
@@ -37,6 +34,7 @@ All commands start with /tas
 
 ## Dev Notes
 * commands are implemented in UI2.as
+* State/PlayState.as:tick controls game ticks
 
 ### Save States
 ### .eetas file 
