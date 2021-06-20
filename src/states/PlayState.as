@@ -525,7 +525,12 @@
 		private var pastT:Number = new Date().time;
 		
 		public override function tick():void {
-			if (TASGlobal.ticksEnabled) {
+			
+			if (KeyBinding.tick.isJustPressed(false)) {
+				TASGlobal.steps = 1;
+			}
+			
+			if (TASGlobal.ticksEnabled || (TASGlobal.steps > 0)) {
 				
 			Global.base.ui2instance.tick();
 			
@@ -756,6 +761,7 @@
 					}
 				}
 			}
+			TASGlobal.steps--;
 			playerOverlaps();
 			super.tick()
 			}

@@ -8,6 +8,7 @@ package tas
 	{
 		
 		public static var ticksEnabled:Boolean = true;
+		public static var steps:int = 0;
 		
 	}
 
