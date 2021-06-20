@@ -3,6 +3,8 @@ package {
 	import items.ItemId;
 	import sounds.*;
 	import states.PlayState;
+	import tas.TASInput;
+	import tas.TASGlobal;
 	import utilities.Random;
 	
 	import ui.LevelComplete;
@@ -26,18 +28,43 @@ package {
 		}
 		
 		protected override function getPlayerInput():void {
-			if(isControlled) {
-				leftdown  = Bl.isKeyDown(37) || KeyBinding.left.isDown(true) ? -1 : 0;
-				updown    = Bl.isKeyDown(38) || KeyBinding.up.isDown(true) ? -1 : 0;
-				rightdown = Bl.isKeyDown(39) || KeyBinding.right.isDown(true) ? 1 : 0;
-				downdown  = Bl.isKeyDown(40) || KeyBinding.down.isDown(true) ? 1 : 0;
+			if (isControlled) {
 				
-				spacejustdown = KeyBinding.jump.isJustPressed(true);
-				spacedown = KeyBinding.jump.isDown(true);
+				var inputs:TASInput = new TASInput();
+				
+				if (TASGlobal.getTASInput && TASGlobal.replaying) {
+					inputs.readInputs();
+					
+					leftdown  = inputs.left  ? -1 : 0;
+					updown    = inputs.up    ? -1 : 0;
+					rightdown = inputs.right ?  1 : 0;
+					downdown  = inputs.down  ?  1 : 0;
+				
+					spacejustdown = inputs.jump;
+					spacedown = spacejustdown;
+				}
+				else {
+					leftdown  = Bl.isKeyDown(37) || KeyBinding.left.isDown(true) ? -1 : 0;
+					updown    = Bl.isKeyDown(38) || KeyBinding.up.isDown(true) ? -1 : 0;
+					rightdown = Bl.isKeyDown(39) || KeyBinding.right.isDown(true) ? 1 : 0;
+					downdown  = Bl.isKeyDown(40) || KeyBinding.down.isDown(true) ? 1 : 0;
+				
+					spacejustdown = KeyBinding.jump.isJustPressed(true);
+					spacedown = KeyBinding.jump.isDown(true);
+					
+					if (TASGlobal.userInputs != null) {
+						inputs.writeInputs(spacejustdown || spacedown, leftdown, rightdown, updown, downdown);
+					}
+					
+				}
+				
+				
 				
 				horizontal = leftdown + rightdown;
 				vertical = updown + downdown;
 				Bl.resetJustPressed();
+				
+				TASGlobal.getTASInput = false;
 			}
 		}
 		

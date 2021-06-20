@@ -526,8 +526,24 @@
 		
 		public override function tick():void {
 			
-			if (KeyBinding.tick.isJustPressed(false)) {
+			if (KeyBinding.tick.isJustPressed(false) || TASGlobal.ticksEnabled) {
 				TASGlobal.steps = 1;
+				
+				if ((TASGlobal.eetasInput != null) && (TASGlobal.eetasInput.bytesAvailable > 0)) {
+					TASGlobal.getTASInput = true;
+				}
+				
+				if ((TASGlobal.eetasInput != null) && (TASGlobal.eetasInput.bytesAvailable == 0) && !TASGlobal.endofTAS) {
+					if (TASGlobal.isSegment) {
+						TASGlobal.ticksEnabled = false;
+						TASGlobal.steps = 0;
+					}
+					else {
+						TASGlobal.ticksEnabled = true;
+					}
+					
+					TASGlobal.endofTAS = true;
+				}
 			}
 			
 			if (TASGlobal.ticksEnabled || (TASGlobal.steps > 0)) {

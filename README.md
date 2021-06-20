@@ -12,7 +12,8 @@ eeo-tas is a tool assisted speedrun client for ee-offline
 * /state load <0-9>: load a game state 
 * /record start: start input recording
 * /record end: stop input recording
-* /loadtas: load a .eetas file for replay 
+* /loadtas: load a .eetas file for replay
+* /playsegment: play the loaded .eetas file and freeze at the end 
 * /playtas: play the loaded .eetas file
 
 ## Work flow
@@ -43,6 +44,7 @@ eeo-tas is a tool assisted speedrun client for ee-offline
 * RNG related events aren't consistent when reloading a state
 * loading doesn't reload coins collected 
 * lava, poison, curses work on realtime not ticks
+* save states kind of work? there are more internal values that need to be saved!
 
 ## Future work 
 * better UI for creating TAS

@@ -1,10 +1,7 @@
 package tas 
 {
 	import flash.utils.ByteArray;
-	/**
-	 * ...
-	 * @author ...
-	 */
+	import flash.net.FileReference;
 	public class TASGlobal 
 	{
 		
@@ -14,6 +11,13 @@ package tas
 		public static var userInputs:ByteArray = null;
 		public static var eetasInput:ByteArray = null;
 		
+		public static var endofTAS:Boolean = true;
+		public static var replaying:Boolean = false;
+		public static var isSegment:Boolean = false;
+		
+		public static var getTASInput:Boolean = false;
+		
+		public static var loadedTAS:FileReference = new FileReference();
 	}
 
 }

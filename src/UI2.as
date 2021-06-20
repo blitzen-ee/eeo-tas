@@ -72,6 +72,7 @@ package  {
 	
 	import tas.TASGlobal;
 	import tas.TASSaveState;
+	import flash.net.FileFilter;
 	
 	public class UI2 extends Sprite{
 		
@@ -2094,6 +2095,7 @@ package  {
 			}
 			else if (cmdName == "/tick") {
 				TASGlobal.ticksEnabled = !TASGlobal.ticksEnabled;
+				base.showInfo2("System Message", "ticks: " + TASGlobal.ticksEnabled.toString());
 			}
 			else if (cmdName == "/state") {
 				if (cmd.length < 2) {
@@ -2155,12 +2157,42 @@ package  {
 			}
 			else if (cmdName == "/loadtas") {
 				
+				TASGlobal.loadedTAS.browse([new FileFilter("EE TAS (.eetas)", "*.eetas")]);
+				TASGlobal.loadedTAS.addEventListener(Event.SELECT, tasFileSelected);
+			}
+			else if (cmdName == "/playsegment") {
+				// play the tas file but turn ticks off at the end
+				TASGlobal.isSegment = true;
+				TASGlobal.replaying = true;
+				TASGlobal.endofTAS = false;
+				TASGlobal.ticksEnabled = true;
 			}
 			else if (cmdName == "/playtas") {
-				
+				TASGlobal.endofTAS = false;
+				TASGlobal.replaying = true;
+				TASGlobal.ticksEnabled = true;
 			}
 			else {
 				base.showInfo2("System Message", "The command `" + cmdName + "` does not exist.");
+			}
+		}
+		
+		private function tasFileSelected(e:Event):void {
+			TASGlobal.loadedTAS.addEventListener(Event.COMPLETE, tasFileLoaded);
+			TASGlobal.loadedTAS.load();
+		}
+		
+		private function tasFileLoaded(e:Event):void {
+			try {
+				var data:ByteArray = new ByteArray();
+				data.writeBytes(TASGlobal.loadedTAS.data, 0, TASGlobal.loadedTAS.data.length);	
+				TASGlobal.eetasInput = data;
+				TASGlobal.eetasInput.position = 0;
+				
+				base.showInfo2("System Message", "TAS File Loaded");
+			}
+			catch (error:Error) {
+				TASGlobal.eetasInput = null;
 			}
 		}
 		

@@ -33,7 +33,7 @@ package tas
 			down = ((inputsOnTick >> 4) & 1) ? true : false;
 		}
 		
-		public function writeInputs():void {
+		public function writeInputs(jump:Boolean, left:int, right:int, up:int, down:int):void {
 			var outputByte:int = 0;
 			
 			if (left != 0) left = 1;
