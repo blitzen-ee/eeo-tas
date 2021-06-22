@@ -1504,7 +1504,9 @@ package
 		
 		public function get canCheat():Boolean{
 			//return isAdmin(name) || isModerator(name) || isDesigner(name) || isCampaignCurator(name)
-			return !Bl.data.isCampaignRoom || (Global.playerInstance.hascrownsilver && !Global.ui2.trialsMode);
+			//return !Bl.data.isCampaignRoom || (Global.playerInstance.hascrownsilver && !Global.ui2.trialsMode);
+		
+			return true;
 		}
 		
 		public static function isAdmin(name:String):Boolean{
