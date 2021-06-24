@@ -537,6 +537,7 @@
 					if (TASGlobal.isSegment) {
 						TASGlobal.ticksEnabled = false;
 						TASGlobal.steps = 0;
+						TASGlobal.isSegment = false;
 					}
 					else {
 						TASGlobal.ticksEnabled = true;

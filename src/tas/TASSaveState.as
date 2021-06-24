@@ -25,7 +25,7 @@ package tas
 		public var isDead: Boolean;
 		public var worldSpawn: int;
 		public var x: Number;
-		public var y: int;
+		public var y: Number;
 		public var speedx: Number;
 		public var speedy: Number;
 		public var checkpointx: int;
@@ -83,7 +83,7 @@ package tas
 			
 			camx = Global.playState.x;
 			camy = Global.playState.y;
-			//team = player.team;
+			team = player.team;
 		}
 		
 		
@@ -131,7 +131,7 @@ package tas
 			Global.playState.x = camx;
 			Global.playState.y = camy;
 			
-			//player.team = team;
+			player.team = team;
 			
 			if (TASGlobal.userInputs != null) {
 				TASGlobal.userInputs.position = time;
