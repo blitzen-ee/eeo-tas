@@ -76,7 +76,8 @@ package  {
 	
 	public class UI2 extends Sprite{
 		
-		private var saveStates:TASSaveState = new TASSaveState(); // change this to an array later
+		//private var saveStates:TASSaveState = new TASSaveState(); // change this to an array later
+		private var saveStates:Array = new Array();
 		
 		private var timeLabel:Label;
 		
@@ -228,6 +229,13 @@ package  {
 		private var quickSay:Array;
 		
 		public function UI2(base:EverybodyEdits, canEdit:Boolean, roomid:String, worldName:String, worldOwner:String, description:String, mapEnabled:Boolean, trialsEnabled:Boolean) {
+			
+			// initialize array for save states
+			for (var s:int = 0; s < 10; s++) {
+				var saveState:TASSaveState = new TASSaveState();
+				saveStates.push(saveState);
+			}
+			
 			
 			trialsMode = trialsEnabled;
 			
@@ -602,6 +610,9 @@ package  {
 			
 			addEventListener(Event.ADDED_TO_STAGE, handleAttach);
 			addEventListener(Event.REMOVED_FROM_STAGE, handleDetatch);
+			
+			
+			
 			
 			Global.ui2 = this;
 		}
@@ -2098,16 +2109,34 @@ package  {
 				base.showInfo2("System Message", "ticks: " + TASGlobal.ticksEnabled.toString());
 			}
 			else if (cmdName == "/state") {
-				if (cmd.length < 2) {
+				if (cmd.length < 3) {
 					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");
 					return;
 				}
 				
+				// try to parse the number
+				var stateNumber: int = parseInt(cmd[2]);
+				
+				if (isNaN(cmd[2])) {
+					base.showInfo2("System Message", "unable to convert number: " + cmd[2]);
+					return;
+				}
+				
+				if (stateNumber > 9 || stateNumber < 0) {
+					base.showInfo2("System Message", "valid state numbers: 0-9");
+					return;
+				}
+				
 				if (cmd[1] == "save") {
-					saveStates.save();
+					saveStates[stateNumber].save();
 				}
 				else if (cmd[1] == "load") {
-					saveStates.load();
+					if (saveStates[stateNumber].x == -1) {
+						base.showInfo2("System Message", "slot has not been saved yet");
+						return;
+					}
+					
+					saveStates[stateNumber].load();
 				}
 				else {
 					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");

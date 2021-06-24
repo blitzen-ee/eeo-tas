@@ -36,7 +36,8 @@ package tas
 		
 		public function TASSaveState() 
 		{
-		
+			x = -1;
+			y = -1;
 		}
 		
 		public function save():void 
