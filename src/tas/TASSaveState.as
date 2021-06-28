@@ -56,16 +56,22 @@ package tas
 			hascrown = player.hascrown;
 			hascrownsilver = player.hascrownsilver;
 			
-			gx = player.gx;
-			gy = player.gy;
+			gx = new Array();
+			for (var igx: int = 0; igx < player.gx.length; igx++ ) {
+				gx[igx] = (player.gx[igx]);
+			}
+			
+			gy = new Array();
+			for (var igy: int = 0; igy < player.gy.length; igy++ ) {
+				gy[igy] = (player.gy[igy]);
+			}
 			
 			low_gravity = player.low_gravity;
 			jumpCount = player.jumpCount;
 			maxJumps = player.maxJumps;
 			speedBoost = player.speedBoost;
 			
-			bx = player.bx;
-			by = player.by;
+			// save blue coins
 			
 			flipGravity = player.flipGravity;
 			deaths = player.deaths;
@@ -85,6 +91,8 @@ package tas
 			camx = Global.playState.x;
 			camy = Global.playState.y;
 			team = player.team;
+			
+			
 		}
 		
 		
@@ -103,16 +111,23 @@ package tas
 			player.hascrown = hascrown;
 			player.hascrownsilver = hascrownsilver;
 			
-			player.gx = gx;
-			player.gy = gy;
+			Global.playState.getWorld().resetCoins();
+			player.coins = 0;
+			// restore gold coins
+			if (gx) {
+				Global.playState.restoreCoins(gx, gy, false);
+			}
 			
 			player.low_gravity = low_gravity;
 			player.jumpCount = jumpCount;
 			player.maxJumps = maxJumps;
 			player.speedBoost = speedBoost;
 			
-			player.bx = bx;
-			player.by = by;
+			// restore blue coins
+			player.bcoins = 0;
+			if (bx) {
+				Global.playState.restoreCoins(bx, by, true);
+			}
 			
 			player.flipGravity = flipGravity;
 			player.deaths = deaths;
