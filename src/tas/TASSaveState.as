@@ -34,6 +34,12 @@ package tas
 		public var camx: int;
 		public var camy: int;
 		
+		public var tilequeue:Array;
+		public var current:int;
+		public var current_below:int;
+		public var morx:int;
+		public var mory:int;
+		
 		public function TASSaveState() 
 		{
 			x = -1;
@@ -72,6 +78,16 @@ package tas
 			speedBoost = player.speedBoost;
 			
 			// save blue coins
+			bx = new Array();
+			for (var ibx: int = 0; ibx < player.bx.length; ibx++ ) {
+				bx[ibx] = (player.bx[ibx]);
+			}
+			
+			by = new Array();
+			for (var iby: int = 0; iby < player.by.length; iby++ ) {
+				by[iby] = (player.by[iby]);
+			}
+			
 			
 			flipGravity = player.flipGravity;
 			deaths = player.deaths;
@@ -92,7 +108,15 @@ package tas
 			camy = Global.playState.y;
 			team = player.team;
 			
+			tilequeue = new Array();
+			for (var tile:int = 0; tile < player.tilequeue.length; tile++) {
+				tilequeue[tile] = player.tilequeue[tile];
+			}
 			
+			current = player.current;
+			current_below = player.current_below;
+			morx = player.morx;
+			mory = player.mory;
 		}
 		
 		
@@ -148,6 +172,16 @@ package tas
 			Global.playState.y = camy;
 			
 			player.team = team;
+			
+			player.tilequeue = new Array();
+			for (var tile:int = 0; tile < tilequeue.length; tile++) {
+				player.tilequeue[tile] = tilequeue[tile];
+			}
+			
+			player.current = current;
+			player.current_below = current_below;
+			player.morx = morx;
+			player.mory = mory;
 			
 			if (TASGlobal.userInputs != null) {
 				TASGlobal.userInputs.position = time;

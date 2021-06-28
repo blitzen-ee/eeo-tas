@@ -82,8 +82,8 @@ package
 		public var name:String;
 		private var textcolor:uint;
 		
-		private var morx:int = 0;
-		private var mory:int = 0;
+		public var morx:int = 0;
+		public var mory:int = 0;
 				
 		public var overlapa:int = -1;
 		public var overlapb:int = -1;
@@ -211,7 +211,7 @@ package
 		
 		private var _isFlaunting:Boolean = false;
 		
-		private var tilequeue:Array;
+		public var tilequeue:Array;
 		
 		private var _deaths:SecureInt = new SecureInt("Deaths");
 		public function set deaths(value:int):void {
