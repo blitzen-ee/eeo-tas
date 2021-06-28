@@ -2190,6 +2190,13 @@ package  {
 				TASGlobal.loadedTAS.addEventListener(Event.SELECT, tasFileSelected);
 			}
 			else if (cmdName == "/playsegment") {
+				if (TASGlobal.eetasInput == null) {
+					base.showInfo2("System Message", "No .eetas file loaded. execute /loadtas");
+					return;
+				}
+				else {
+					TASGlobal.eetasInput.position = 0;
+				}
 				// play the tas file but turn ticks off at the end
 				TASGlobal.isSegment = true;
 				TASGlobal.replaying = true;
@@ -2197,9 +2204,19 @@ package  {
 				TASGlobal.ticksEnabled = true;
 			}
 			else if (cmdName == "/playtas") {
+				if (TASGlobal.eetasInput == null) {
+					base.showInfo2("System Message", "No .eetas file loaded. execute /loadtas");
+					return;
+				}
+				else {
+					TASGlobal.eetasInput.position = 0;
+				}
+				
 				TASGlobal.endofTAS = false;
 				TASGlobal.replaying = true;
 				TASGlobal.ticksEnabled = true;
+				
+				
 			}
 			else {
 				base.showInfo2("System Message", "The command `" + cmdName + "` does not exist.");
