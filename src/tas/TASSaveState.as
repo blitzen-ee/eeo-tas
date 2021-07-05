@@ -4,6 +4,10 @@ package tas
 	
 	public class TASSaveState 
 	{
+		// world
+		public var hideTimedoorOffset:Number = 0;
+		
+		// player
 		public var switches: Object;
 		public var rank: int;
 		public var isVulnerable: Boolean;
@@ -40,6 +44,12 @@ package tas
 		public var morx:int;
 		public var mory:int;
 		
+		// effects
+		public var curseTicks:Number;
+		public var zombieTicks:Number;
+		public var fireTicks:Number;
+		public var poisonTicks:Number;
+		
 		public function TASSaveState() 
 		{
 			x = -1;
@@ -48,6 +58,12 @@ package tas
 		
 		public function save():void 
 		{
+			//world
+			var world:World = Global.playState.world;
+			
+			//hideTimedoorOffset = world.hideTimedoorOffset;
+			
+			// player
 			var player: Player = Global.playState.player;
 			
 			switches = player.switches;
@@ -117,11 +133,22 @@ package tas
 			current_below = player.current_below;
 			morx = player.morx;
 			mory = player.mory;
+			
+			curseTicks = player.curseTicks;
+		    zombieTicks = player.zombieTicks;
+			fireTicks = player.fireTicks;
+			poisonTicks = player.poisonTicks;
 		}
 		
 		
 		public function load():void
 		{
+			//world
+			var world:World = Global.playState.world;
+			
+			//world.hideTimedoorOffset = hideTimedoorOffset;
+			
+			// player
 			var player: Player = Global.playState.player;
 			player.switches = switches;
 			
@@ -182,6 +209,12 @@ package tas
 			player.current_below = current_below;
 			player.morx = morx;
 			player.mory = mory;
+			
+			// effects
+			player.curseTicks = curseTicks;
+		    player.zombieTicks = zombieTicks;
+			player.fireTicks = fireTicks;
+			player.poisonTicks = poisonTicks;
 			
 			if (TASGlobal.userInputs != null) {
 				TASGlobal.userInputs.position = time;

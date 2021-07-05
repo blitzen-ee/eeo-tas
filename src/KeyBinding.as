@@ -33,7 +33,7 @@ package {
 		public static var lookDown:KeyBinding =          _add(22, "Look Down", new Key(89, true), null, true);       // Shift + H
 		public static var lookRight:KeyBinding =         _add(23, "Look Right", new Key(71, true), null, true);      // Shift + J
 		public static var hideUI:KeyBinding =            _add(24, "Hide UI", new Key(79, true), null, true);         // Shift + O
-		public static var tick:KeyBinding =              _add(27, "Tick", new Key(67, true), null);        // Shift + C
+		public static var tick:KeyBinding =              _add(27, "Tick", new Key(67, true), null);        			 // Shift + C
 		// NEXT: 28
 		
 		private static function _add(id:int, name:String, keyDefault:Key, keyAzerty:Key = null, staffOnly:Boolean = false):KeyBinding {

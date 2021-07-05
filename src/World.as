@@ -1076,7 +1076,7 @@ package{
 						case 412:
 						case 413:
 						case 414: {
-							if (!player.isFlying && !full) {
+							if (!player.isFlying && !full && !showAllSecrets) {
 								if (lookup.isBlink(cx, cy)) {
 									if (lookup.getBlink(cx, cy) >= 0) {
 										var id:int = type - 411;
@@ -1102,7 +1102,7 @@ package{
 						}
 						
 						case 1519: {
-							if (!player.isFlying && !full) {
+							if (!player.isFlying && !full && !showAllSecrets) {
 								if (lookup.isBlink(cx, cy)) {
 									if (lookup.getBlink(cx, cy) >= 0) {
 										ItemManager.sprInvGravityDownBlink.drawPoint(target, point, lookup.getBlink(cx, cy));
@@ -1122,7 +1122,7 @@ package{
 						}
 						
 						case ItemId.SLOW_DOT_INVISIBLE: {
-							if (!player.isFlying && !full) {
+							if (!player.isFlying && !full && !showAllSecrets) {
 								if (lookup.isBlink(cx, cy)) {
 									if (lookup.getBlink(cx, cy) >= 0) {
 										ItemManager.sprInvDotBlink.drawPoint(target, point, lookup.getBlink(cx, cy));
@@ -1309,7 +1309,7 @@ package{
 						}	
 							
 						case ItemId.PORTAL_INVISIBLE: {
-							if ((Bl.data.canEdit && player.isFlying) || full) {
+							if ((Bl.data.canEdit && player.isFlying) || full || showAllSecrets) {
 								var pInv:Portal = lookup.getPortal(cx,cy);
 								ItemManager.sprPortalInvisible.drawPoint(target, point, pInv.rotation);
 							}
@@ -1423,7 +1423,7 @@ package{
 						}
 						case 136:{
 							var pl:Player = (Global.base.state as PlayState).player;
-							if ((Bl.data.canEdit && pl.isFlying) || full){
+							if ((Bl.data.canEdit && pl.isFlying) || full || showAllSecrets){
 								ItemManager.sprSecret.drawPoint(target, point, 2);
 							}
 							continue;

@@ -116,6 +116,11 @@ package
 		public var poisonTimeStart:Number = 0;
 		public var poisonDuration:Number = 0;
 		
+		public var curseTicks:Number = 0;
+		public var zombieTicks:Number = 0;
+		public var fireTicks:Number = 0;
+		public var poisonTicks:Number = 0;
+		
 		//if TRUE player will send "m" message no matter what.
 		//use it when you need to tp somebody and update their position.
 		public var enforceMovement:Boolean = false;
