@@ -121,6 +121,12 @@ package
 		public var fireTicks:Number = 0;
 		public var poisonTicks:Number = 0;
 		
+		public var cx:int;
+		public var cy:int;
+		
+		public var currentSX:Number;
+		public var currentSY:Number;
+		
 		//if TRUE player will send "m" message no matter what.
 		//use it when you need to tp somebody and update their position.
 		public var enforceMovement:Boolean = false;
@@ -265,9 +271,9 @@ package
 			modmodeRow = -1;
 		}
 		
-		protected var pastx:int = 0;
-		protected var pasty:int = 0;
-		private var queue:Vector.<int> = new Vector.<int>(Config.physics_queue_length);
+		public var pastx:int = 0;
+		public var pasty:int = 0;
+		public var queue:Vector.<int> = new Vector.<int>(Config.physics_queue_length);
 		private var lastJump:Number = -new Date().time;
 		private var changed:Boolean = false;
 		
@@ -297,9 +303,9 @@ package
 			
 		private var lastOverlap:int = 0;
 		private var that:SynchronizedObject = this as SynchronizedObject;
-		private var donex:Boolean = false;
-		private var doney:Boolean = false;
-		private var animoffset:Number = 0;
+		public var donex:Boolean = false;
+		public var doney:Boolean = false;
+		public var animoffset:Number = 0;
 		private var modoffset:Number = 0;
 		private var modrect:Rectangle;
 		private var auraAnimOffset:Number = 0;
@@ -398,8 +404,8 @@ package
 				if (poison && poisonDuration && curTime - poisonTimeStart > poisonDuration * 1000) killPlayer();
 			}
 			
-			var cx:int = (this.x+8)>>4;
-			var cy:int = (this.y+8)>>4;
+			cx = (this.x+8)>>4;
+			cy = (this.y+8)>>4;
 			
 			var delayed:int = queue.shift();
 			current = world.getTile(0,cx,cy);
@@ -826,10 +832,10 @@ package
 			}
 			
 			var reminderX:Number = x%1;
-			var currentSX:Number = _speedX
+			currentSX = _speedX
 			
 			var reminderY:Number = y%1;
-			var currentSY:Number = _speedY
+			currentSY = _speedY
 
 			
 			donex = false;

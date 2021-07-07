@@ -1,6 +1,7 @@
 package tas 
 {
 	import Global;
+	import Config;
 	
 	public class TASSaveState 
 	{
@@ -39,16 +40,47 @@ package tas
 		public var camy: int;
 		
 		public var tilequeue:Array;
+		public var queue:Vector.<int>;
 		public var current:int;
 		public var current_below:int;
 		public var morx:int;
 		public var mory:int;
+		public var mox:int;
+		public var moy:int;
+		public var mx:Number;
+		public var my:Number;
+		public var modifierX:Number;
+		public var modifierY:Number;
+		
+		public var pastx:int;
+		public var pasty:int; // lol
+		
+		public var horizontal:int;
+		public var vertical:int;
+		
+		public var oh:int;
+		public var ov:int;
+		public var ox:Number;
+		public var oy:Number;
 		
 		// effects
 		public var curseTicks:Number;
 		public var zombieTicks:Number;
 		public var fireTicks:Number;
 		public var poisonTicks:Number;
+		
+		public var enforceMovement:Boolean;
+		
+		public var cx:int;
+		public var cy:int;
+		
+		public var donex:Boolean;
+		public var doney:Boolean;
+		
+		public var animoffset:Number;
+		
+		public var currentSX:Number;
+		public var currentSY:Number;
 		
 		public function TASSaveState() 
 		{
@@ -57,7 +89,7 @@ package tas
 		}
 		
 		public function save():void 
-		{
+		{			
 			//world
 			var world:World = Global.playState.world;
 			
@@ -65,6 +97,8 @@ package tas
 			
 			// player
 			var player: Player = Global.playState.player;
+			
+			
 			
 			switches = player.switches;
 			
@@ -129,15 +163,50 @@ package tas
 				tilequeue[tile] = player.tilequeue[tile];
 			}
 			
+			queue = new Vector.<int>(Config.physics_queue_length);
+			for (var q:int = 0; q < player.queue.length; q++) {
+				queue.push(player.queue.pop());
+			}
+			
 			current = player.current;
 			current_below = player.current_below;
 			morx = player.morx;
 			mory = player.mory;
+			mox = player.mox;
+			moy = player.moy;
+			mx = player.mx;
+			my = player.my;
+			modifierX = player.modifierX;
+			modifierY = player.modifierY;
+			
+			pastx = player.pastx;
+			pasty = player.pasty;
+			
+			horizontal = player.horizontal;
+			vertical = player.vertical;
+			
+			oh = player.oh;
+			ov = player.ov;
+			ox = player.ox;
+			oy = player.oy;
 			
 			curseTicks = player.curseTicks;
 		    zombieTicks = player.zombieTicks;
 			fireTicks = player.fireTicks;
 			poisonTicks = player.poisonTicks;
+			
+			enforceMovement = player.enforceMovement;
+			
+			cx = player.cx;
+			cy = player.cy;
+			
+			donex = player.donex;
+			doney = player.doney;
+			
+			animoffset = player.animoffset;
+			
+			currentSX = player.currentSX;
+			currentSY = player.currentSY;
 		}
 		
 		
@@ -205,16 +274,51 @@ package tas
 				player.tilequeue[tile] = tilequeue[tile];
 			}
 			
+			player.queue = new Vector.<int>(Config.physics_queue_length);
+			for (var q:int = 0; q < queue.length; q++) {
+				player.queue.push(queue.pop());
+			}
+			
 			player.current = current;
 			player.current_below = current_below;
 			player.morx = morx;
 			player.mory = mory;
+			player.mox = mox;
+			player.moy = moy;
+			player.mx = mx;
+			player.my = my;
+			player.modifierX = modifierX;
+			player.modifierY = modifierY;
+			
+			player.pastx = pastx;
+			player.pasty = pasty;
+			
+			player.horizontal = horizontal;
+			player.vertical = vertical;
+			
+			player.oh = oh;
+			player.ov = ov;
+			player.ox = ox;
+			player.oy = oy;
 			
 			// effects
 			player.curseTicks = curseTicks;
 		    player.zombieTicks = zombieTicks;
 			player.fireTicks = fireTicks;
 			player.poisonTicks = poisonTicks;
+			
+			player.enforceMovement = enforceMovement;
+			
+			player.cx = cx;
+			player.cy = cy;
+			
+			player.donex = donex;
+			player.doney = doney;
+			
+			player.animoffset = animoffset;
+			
+			player.currentSX = currentSX;
+			player.currentSY = currentSY;
 			
 			if (TASGlobal.userInputs != null) {
 				TASGlobal.userInputs.position = time;
