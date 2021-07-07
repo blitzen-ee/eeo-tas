@@ -165,7 +165,7 @@ package tas
 			
 			queue = new Vector.<int>(Config.physics_queue_length);
 			for (var q:int = 0; q < player.queue.length; q++) {
-				queue.push(player.queue.pop());
+				queue[q] = player.queue[q]
 			}
 			
 			current = player.current;
@@ -276,7 +276,7 @@ package tas
 			
 			player.queue = new Vector.<int>(Config.physics_queue_length);
 			for (var q:int = 0; q < queue.length; q++) {
-				player.queue.push(queue.pop());
+				player.queue[q] = queue[q];
 			}
 			
 			player.current = current;
