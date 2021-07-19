@@ -2129,6 +2129,7 @@ package  {
 				
 				if (cmd[1] == "save") {
 					saveStates[stateNumber].save();
+					base.showInfo2("System Message", "saving state " + stateNumber);
 				}
 				else if (cmd[1] == "load") {
 					if (saveStates[stateNumber].x == -1) {
@@ -2137,6 +2138,7 @@ package  {
 					}
 					
 					saveStates[stateNumber].load();
+					base.showInfo2("System Message", "" + TASGlobal.userInputs.length);
 				}
 				else {
 					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");
@@ -2201,7 +2203,7 @@ package  {
 				TASGlobal.isSegment = true;
 				TASGlobal.replaying = true;
 				TASGlobal.endofTAS = false;
-				TASGlobal.ticksEnabled = true;
+				TASGlobal.ticksEnabled = false;
 			}
 			else if (cmdName == "/playtas") {
 				if (TASGlobal.eetasInput == null) {
@@ -2216,6 +2218,12 @@ package  {
 				TASGlobal.replaying = true;
 				TASGlobal.ticksEnabled = true;
 				
+				
+			}
+			else if (cmdName == "/endtas") {
+				TASGlobal.endofTAS = true;
+				TASGlobal.replaying = false;
+				TASGlobal.ticksEnabled = true;
 				
 			}
 			else {

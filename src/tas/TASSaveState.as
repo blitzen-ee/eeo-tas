@@ -2,9 +2,14 @@ package tas
 {
 	import Global;
 	import Config;
+	import flash.utils.ByteArray;
 	
 	public class TASSaveState 
 	{
+		// other
+		public var writeHead:int;
+		public var userInputs:ByteArray = null;
+		
 		// world
 		public var hideTimedoorOffset:Number = 0;
 		
@@ -89,7 +94,14 @@ package tas
 		}
 		
 		public function save():void 
-		{			
+		{
+			if (TASGlobal.userInputs != null) {
+				userInputs = new ByteArray();
+				for (var inputsIdx: int = 0; inputsIdx < TASGlobal.userInputs.length; inputsIdx++) {
+					userInputs.writeByte(TASGlobal.userInputs[inputsIdx]);
+				}
+			}
+			
 			//world
 			var world:World = Global.playState.world;
 			
@@ -212,6 +224,14 @@ package tas
 		
 		public function load():void
 		{
+			if (userInputs != null) {
+				TASGlobal.userInputs = new ByteArray();
+				for (var inputIdx: int = 0; inputIdx < userInputs.length; inputIdx++) {
+					TASGlobal.userInputs.writeByte(userInputs[inputIdx]);
+				}
+			}
+			
+			
 			//world
 			var world:World = Global.playState.world;
 			
@@ -237,6 +257,15 @@ package tas
 			if (gx) {
 				Global.playState.restoreCoins(gx, gy, false);
 			}
+			player.gx = new Array();
+			for (var igx: int = 0; igx < gx.length; igx++ ) {
+				player.gx[igx] = gx[igx];
+			}
+			
+			player.gy = new Array();
+			for (var igy: int = 0; igy < gy.length; igy++ ) {
+				player.gy[igy] = gy[igy];
+			}
 			
 			player.low_gravity = low_gravity;
 			player.jumpCount = jumpCount;
@@ -247,6 +276,15 @@ package tas
 			player.bcoins = 0;
 			if (bx) {
 				Global.playState.restoreCoins(bx, by, true);
+			}
+			player.bx = new Array();
+			for (var ibx: int = 0; ibx < bx.length; ibx++ ) {
+				player.bx[ibx] = bx[ibx];
+			}
+			
+			player.by = new Array();
+			for (var iby: int = 0; igy < by.length; iby++ ) {
+				player.by[iby] = by[iby];
 			}
 			
 			player.flipGravity = flipGravity;
