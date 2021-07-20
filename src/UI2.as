@@ -2138,7 +2138,7 @@ package  {
 					}
 					
 					saveStates[stateNumber].load();
-					base.showInfo2("System Message", "" + TASGlobal.userInputs.length);
+					base.showInfo2("System Message", "state " + stateNumber + " loaded");
 				}
 				else {
 					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");
