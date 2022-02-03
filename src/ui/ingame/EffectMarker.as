@@ -25,17 +25,16 @@ package ui.ingame
 		
 		private var _id:int;
 		private var timer:Sprite;
-		private var startDate:Date;
+		private var startDate:Number;
 		private var duration:Number;
 		
-		public function EffectMarker(bmd:BitmapData, id:int, timeLeft:Number = 0, duration:Number = 0)
+		public function EffectMarker(bmd:BitmapData, id:int, arg:Number = 0, duration:Number = 0)
 		{
 			super();
 			
 			_id = id;
 			this.duration = duration;
-			startDate = new Date();
-			startDate.time -= (duration - timeLeft) * 1000;
+			startDate = arg;
 			
 			var effectGraphics:Bitmap;
 			
@@ -43,20 +42,20 @@ package ui.ingame
 			// for gravity effect
 			if (id == ItemId.EFFECT_GRAVITY) {
 				var gravityGraphics:BitmapData = new BitmapData(16, 16);
-				ItemManager.sprGravityEffect.drawPoint(gravityGraphics, new Point(0, 0), timeLeft);
+				ItemManager.sprGravityEffect.drawPoint(gravityGraphics, new Point(0, 0), arg);
 				
 				effectGraphics = new Bitmap(gravityGraphics.clone());
 			}
 			// for jump effect
 			else if (id == ItemId.EFFECT_JUMP) {
 				var jumpGraphics:BitmapData = new BitmapData(16, 16);
-				ItemManager.sprEffect.drawPoint(jumpGraphics, new Point(0, 0), [7, 0, 22][timeLeft]);
+				ItemManager.sprEffect.drawPoint(jumpGraphics, new Point(0, 0), [7, 0, 22][arg]);
 				
 				effectGraphics = new Bitmap(jumpGraphics.clone());
 			}
 			else if (id == ItemId.EFFECT_RUN) {
 				var speedGraphics:BitmapData = new BitmapData(16, 16);
-				ItemManager.sprEffect.drawPoint(speedGraphics, new Point(0, 0), [9, 2, 25][timeLeft])
+				ItemManager.sprEffect.drawPoint(speedGraphics, new Point(0, 0), [9, 2, 25][arg])
 				
 				effectGraphics = new Bitmap(speedGraphics.clone());
 			}
@@ -88,26 +87,20 @@ package ui.ingame
 		
 		public function get timeLeft():Number
 		{
-			return new Date().time - (startDate.time + (duration * 1000));
+			return duration - (Global.playState.ticks - startDate);
 		}
 		
 		public function get progress():Number
 		{
 			if (duration == 0) return 0;
-			return Math.max(0, Math.min((new Date().time - startDate.time) / (duration * 1000), 1));
+			return Math.max(0, Math.min(timeLeft / duration, 1));
 		}
 		
-		public function refresh():Boolean
+		public function refresh():void
 		{
-			if (duration == 0) return false;
-			var prog:Number = progress;
-			setProgress(prog);
-			if (prog == 1 && (id == ItemId.EFFECT_CURSE || id == ItemId.EFFECT_ZOMBIE || 
-			id == ItemId.LAVA || id == ItemId.EFFECT_POISON)) {
-				Global.playState.player.killPlayer();
-				return true;
-			}
-			return false;
+			if (duration == 0) return;
+			
+			setProgress(progress);
 		}
 		
 		private function setProgress(amount:Number):void
@@ -121,7 +114,7 @@ package ui.ingame
 			timer.graphics.beginFill(0x00FF00, 1);
 			timer.graphics.drawRect(1, 1, TIMEBAR_WIDTH - 2, TIMEBAR_HEIGHT - 2);
 			timer.graphics.beginFill(0x0, 1);
-			timer.graphics.drawRect(1, 1, TIMEBAR_WIDTH - 2, TIMEBAR_HEIGHT - 2 - (TIMEBAR_HEIGHT - 2) * (1 - amount));
+			timer.graphics.drawRect(1, 1, TIMEBAR_WIDTH - 2, TIMEBAR_HEIGHT - 2 - (TIMEBAR_HEIGHT - 2) * amount);
 		}
 	}
 }

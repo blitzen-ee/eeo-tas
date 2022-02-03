@@ -4,6 +4,7 @@
 	import animations.AnimationManager;
 	import flash.display.StageDisplayState;
 	import flash.utils.getTimer;
+	import tas.TASSaveState;
 	import ui.BrickContainer;
 	import ui.DebugStats;
 	import utilities.MathUtil;
@@ -193,7 +194,11 @@
 		public function restoreCoins(xs:Array, ys:Array, isBlue:Boolean):void {			
 			for (var i:int = 0; i < xs.length; i++)
 			{
+				var tile:int = world.getTile(0, xs[i], ys[i]);
+				if (!isBlue && !(tile == 100 || tile == 110)) continue;
+				if ( isBlue && !(tile == 101 || tile == 111)) continue;
 				world.setTileComplex(0, xs[i], ys[i], isBlue ? 111 : 110, null);
+				
 				if (isBlue) {
 					player.bcoins++;
 					player.bx.push(xs[i])
@@ -524,6 +529,8 @@
 		private var pastY:uint = 0;
 		private var pastT:Number = new Date().time;
 		
+		public var ticks:int = 0;
+		
 		public override function tick():void {
 			
 			if (KeyBinding.tick.isJustPressed(false) || TASGlobal.ticksEnabled) {
@@ -544,12 +551,15 @@
 					}
 					
 					TASGlobal.endofTAS = true;
+					Config.physics_ms_per_tick = TASGlobal.speedMult;
 				}
 			}
 			
 			if (TASGlobal.ticksEnabled || (TASGlobal.steps > 0)) {
 				
+			
 			Global.base.ui2instance.tick();
+			ticks++;
 			
 			var old:Number = world.showCoinGate;
 			world.showCoinGate = player.coins;
@@ -940,14 +950,13 @@
 					if (p2.getCanBeTagged()) {
 						if (MathUtil.inRange(p1.x, p1.y, p2.x, p2.y, 8)) {
 							if (p1.cursed && !p2.cursed) {
-								var curTime:Number = new Date().time;
 								p1.touchCooldown = 100;
 								p2.touchCooldown = 100;
-								p2.setEffect(Config.effectCurse, true, Math.round(p1.curseDuration - (curTime - p1.curseTimeStart) / 1000), p1.curseDuration);
+								p2.setEffect(Config.effectCurse, true, Math.floor(p1.curseTimeStart/100)*100, p1.curseDuration/100);
 								p1.setEffect(Config.effectCurse, false);
 							}
 							if (p1.zombie && !p2.zombie) {
-								p2.setEffect(Config.effectZombie, true, p1.zombieDuration, p1.zombieDuration);
+								p2.setEffect(Config.effectZombie, true, 0, p1.zombieDuration/100);
 							}
 							if (p1.isInvulnerable && (p2.cursed || p2.zombie)) {
 								p2.setEffect(Config.effectCurse, false);

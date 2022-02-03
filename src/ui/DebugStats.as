@@ -71,6 +71,7 @@ package ui {
 			add("Position", "(" + (state.player.x / 16).toFixed(15) + ", " + (state.player.y / 16).toFixed(15) + ")");
 			add("Velocity","(" + (this.state.player.speedX / Config.physics_variable_multiplyer).toFixed(15) + ", " + (this.state.player.speedY / Config.physics_variable_multiplyer).toFixed(15) + ")");
 			add("Time", (state.player.ticks / 100).toFixed(2) + "s");
+			add("Level time", (state.ticks / 100).toFixed(2) + "s");
 			
 			if (Global.reportTextTest != "") 
 				add("Report", Global.reportTextTest);

@@ -11,13 +11,17 @@ package tas
 		public var userInputs:ByteArray = null;
 		
 		// world
-		public var hideTimedoorOffset:Number = 0;
+		public var keysTimer:Object;
+		public var levelTime: Number;
+		public var orangeSwitches: Object;
 		
 		// player
-		public var switches: Object;
+		public var purpleSwitches: Object;
 		public var rank: int;
-		public var isVulnerable: Boolean;
+		public var isInvulnerable: Boolean;
 		public var hasLevitation: Boolean;
+		public var currentThrust: Number;
+		public var slippery: Number;
 		public var time: Number;
 		public var hascrown: Boolean;
 		public var hascrownsilver: Boolean;
@@ -33,6 +37,7 @@ package tas
 		public var deaths: int;
 		public var jumpBoost: int;
 		public var isDead: Boolean;
+		public var deadoffset:Number;
 		public var worldSpawn: int;
 		public var x: Number;
 		public var y: Number;
@@ -69,10 +74,22 @@ package tas
 		public var oy:Number;
 		
 		// effects
-		public var curseTicks:Number;
-		public var zombieTicks:Number;
-		public var fireTicks:Number;
-		public var poisonTicks:Number;
+		public var cursed:Boolean;
+		public var curseTimeStart:Number;
+		public var curseDuration:Number;
+		
+		public var zombie:Boolean;
+		public var zombieTimeStart:Number;
+		public var zombieDuration:Number;
+		
+		public var isOnFire:Boolean;
+		public var fireTimeStart:Number;
+		public var fireDuration:Number;
+		
+		public var poison:Boolean;
+		public var poisonTimeStart:Number;
+		public var poisonDuration:Number;
+		
 		
 		public var enforceMovement:Boolean;
 		
@@ -105,56 +122,85 @@ package tas
 			//world
 			var world:World = Global.playState.world;
 			
-			//hideTimedoorOffset = world.hideTimedoorOffset;
+			levelTime = Global.playState.ticks;
+			
+			keysTimer = new Object();
+			for (var color:String in world.keysTimer)
+				keysTimer[color] = world.keysTimer[color];
+				
+			orangeSwitches = new Object();
+			for (var orangeSwitchId:String in world.orangeSwitches)
+				orangeSwitches[orangeSwitchId] = world.orangeSwitches[orangeSwitchId];
+			
 			
 			// player
 			var player: Player = Global.playState.player;
 			
-			
-			
-			switches = player.switches;
+			purpleSwitches = new Object();
+			for (var purpleSwitchId:String in player.switches)
+				purpleSwitches[purpleSwitchId] = player.switches[purpleSwitchId];
+				
 			
 			// rank = 
 			
-			isVulnerable = player.isInvulnerable;
-			hasLevitation = player.hasLevitation;
+			
+			slippery = player.slippery;
 			
 			time = Global.playState.player.ticks;
 			
 			hascrown = player.hascrown;
 			hascrownsilver = player.hascrownsilver;
 			
+			// save gold coins
 			gx = new Array();
-			for (var igx: int = 0; igx < player.gx.length; igx++ ) {
-				gx[igx] = (player.gx[igx]);
-			}
-			
 			gy = new Array();
-			for (var igy: int = 0; igy < player.gy.length; igy++ ) {
-				gy[igy] = (player.gy[igy]);
+			for (var ig: int = 0; ig < player.gx.length; ig++ ) {
+				gx[ig] = (player.gx[ig]);
+				gy[ig] = (player.gy[ig]);
 			}
 			
-			low_gravity = player.low_gravity;
-			jumpCount = player.jumpCount;
-			maxJumps = player.maxJumps;
-			speedBoost = player.speedBoost;
 			
 			// save blue coins
 			bx = new Array();
-			for (var ibx: int = 0; ibx < player.bx.length; ibx++ ) {
-				bx[ibx] = (player.bx[ibx]);
-			}
-			
 			by = new Array();
-			for (var iby: int = 0; iby < player.by.length; iby++ ) {
-				by[iby] = (player.by[iby]);
+			for (var ib: int = 0; ib < player.bx.length; ib++ ) {
+				bx[ib] = (player.bx[ib]);
+				by[ib] = (player.by[ib]);
 			}
 			
+			jumpCount = player.jumpCount;
+			maxJumps = player.maxJumps;
 			
+			hasLevitation = player.hasLevitation;
+			currentThrust = player._currentThrust;
+			
+			low_gravity = player.low_gravity;
+			speedBoost = player.speedBoost;
 			flipGravity = player.flipGravity;
-			deaths = player.deaths;
 			jumpBoost = player.jumpBoost;
+			isInvulnerable = player.isInvulnerable;
+			
+			cursed = player.cursed;
+			curseDuration = player.curseDuration;
+			curseTimeStart = player.curseTimeStart;
+			
+			zombie = player.zombie;
+			zombieDuration = player.zombieDuration;
+			zombieTimeStart = player.zombieTimeStart;
+			
+			isOnFire = player.isOnFire;
+			fireDuration = player.fireDuration;
+			fireTimeStart = player.fireTimeStart;
+			
+			poison = player.poison;
+			poisonDuration = player.poisonDuration;
+			poisonTimeStart = player.poisonTimeStart;
+			
+			
+			deaths = player.deaths;
+			
 			isDead = player.isDead;
+			deadoffset = player.deadoffset;
 			worldSpawn = player.worldSpawn;
 			
 			x = player.x;
@@ -202,10 +248,10 @@ package tas
 			ox = player.ox;
 			oy = player.oy;
 			
-			curseTicks = player.curseTicks;
-		    zombieTicks = player.zombieTicks;
-			fireTicks = player.fireTicks;
-			poisonTicks = player.poisonTicks;
+			//curseTicks = player.curseTicks;
+		    //zombieTicks = player.zombieTicks;
+			//fireTicks = player.fireTicks;
+			//poisonTicks = player.poisonTicks;
 			
 			enforceMovement = player.enforceMovement;
 			
@@ -235,62 +281,83 @@ package tas
 			//world
 			var world:World = Global.playState.world;
 			
-			//world.hideTimedoorOffset = hideTimedoorOffset;
+			Global.playState.ticks = levelTime;
+			
+			world.keysTimer = new Object();
+			for (var color:String in keysTimer) {
+				world.keysTimer[color] = keysTimer[color];
+				world.setKey(color, keysTimer[color], true);
+			}
+			
+			Global.playState.pressOrangeSwitch(1000, false)
+			for (var orangeSwitchId:String in orangeSwitches)
+				if(orangeSwitches[orangeSwitchId])
+					Global.playState.pressOrangeSwitch(int(orangeSwitchId), true);
+				
 			
 			// player
 			var player: Player = Global.playState.player;
-			player.switches = switches;
+			
+			player.pressPurpleSwitch(1000, false)
+			for (var purpleSwitchId:String in purpleSwitches)
+				if(purpleSwitches[purpleSwitchId])
+					player.pressPurpleSwitch(int(purpleSwitchId), true);
+				
 			
 			// rank
 			
-			player.isInvulnerable = isVulnerable;
-			player.hasLevitation = hasLevitation;
+			
+			player.slippery = slippery;
 			
 			Global.playState.player.ticks = time;
 			
 			player.hascrown = hascrown;
 			player.hascrownsilver = hascrownsilver;
+			Global.playState.player.completed = hascrownsilver;
+			Global.playState.checkCrown(hascrown);
+			Global.playState.checkSilverCrown(hascrownsilver);
 			
 			Global.playState.getWorld().resetCoins();
-			player.coins = 0;
+			
 			// restore gold coins
+			player.gx = new Array();
+			player.gy = new Array();
+			player.coins = 0;
 			if (gx) {
 				Global.playState.restoreCoins(gx, gy, false);
 			}
-			player.gx = new Array();
-			for (var igx: int = 0; igx < gx.length; igx++ ) {
-				player.gx[igx] = gx[igx];
-			}
-			
-			player.gy = new Array();
-			for (var igy: int = 0; igy < gy.length; igy++ ) {
-				player.gy[igy] = gy[igy];
-			}
-			
-			player.low_gravity = low_gravity;
-			player.jumpCount = jumpCount;
-			player.maxJumps = maxJumps;
-			player.speedBoost = speedBoost;
 			
 			// restore blue coins
+			player.bx = new Array();
+			player.by = new Array();
 			player.bcoins = 0;
 			if (bx) {
 				Global.playState.restoreCoins(bx, by, true);
 			}
-			player.bx = new Array();
-			for (var ibx: int = 0; ibx < bx.length; ibx++ ) {
-				player.bx[ibx] = bx[ibx];
-			}
 			
-			player.by = new Array();
-			for (var iby: int = 0; igy < by.length; iby++ ) {
-				player.by[iby] = by[iby];
-			}
+			player.setEffect(Config.effectMultijump, maxJumps != 1, maxJumps);
+			player.jumpCount = jumpCount;
 			
-			player.flipGravity = flipGravity;
+			player.setEffect(Config.effectFly, hasLevitation);
+			player._currentThrust = currentThrust;
+			
+			player.setEffect(Config.effectLowGravity, low_gravity);
+			player.setEffect(Config.effectRun, speedBoost != 0, speedBoost);
+			player.setEffect(Config.effectJump, jumpBoost != 0, jumpBoost);
+			player.setEffect(Config.effectProtection, isInvulnerable);
+			player.setEffect(Config.effectGravity, flipGravity != 0, flipGravity);
+			
+			player.setEffect(Config.effectCurse, cursed, curseTimeStart, curseDuration/100 - 2*Global.ping);
+			player.setEffect(Config.effectZombie, zombie, zombieTimeStart, zombieDuration/100 - 2*Global.ping);
+			player.setEffect(Config.effectFire, isOnFire, fireTimeStart, fireDuration/100 - 2*Global.ping);
+			player.setEffect(Config.effectPoison, poison, poisonTimeStart, poisonDuration/100 - 2*Global.ping);
+			
+			Global.ui2.effectDisplay.update();
+			
 			player.deaths = deaths;
-			player.jumpBoost = jumpBoost;
+			
 			player.isDead = isDead;
+			player.deadoffset = deadoffset;
 			player.worldSpawn = worldSpawn;
 			
 			player.x = x;
@@ -340,10 +407,10 @@ package tas
 			player.oy = oy;
 			
 			// effects
-			player.curseTicks = curseTicks;
-		    player.zombieTicks = zombieTicks;
-			player.fireTicks = fireTicks;
-			player.poisonTicks = poisonTicks;
+			//player.curseTicks = curseTicks;
+		    //player.zombieTicks = zombieTicks;
+			//player.fireTicks = fireTicks;
+			//player.poisonTicks = poisonTicks;
 			
 			player.enforceMovement = enforceMovement;
 			
@@ -359,7 +426,7 @@ package tas
 			player.currentSY = currentSY;
 			
 			if (TASGlobal.userInputs != null) {
-				TASGlobal.userInputs.position = time;
+				TASGlobal.userInputs.position = levelTime;
 			}
 		}
 	}

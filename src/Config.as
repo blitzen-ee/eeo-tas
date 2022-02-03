@@ -41,7 +41,7 @@ package
 		public static const termsVersion:int = 2;
 		
 		//Specefic to physics.		
-		public static var physics_ms_per_tick:int = 10
+		public static var physics_ms_per_tick:Number = 10
 		public static var physics_variable_multiplyer:Number = 7.752;
 		
 		public static var physics_base_drag:Number = Math.pow(.9981,physics_ms_per_tick) * 1.00016093;

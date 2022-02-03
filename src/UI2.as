@@ -77,7 +77,7 @@ package  {
 	public class UI2 extends Sprite{
 		
 		//private var saveStates:TASSaveState = new TASSaveState(); // change this to an array later
-		private var saveStates:Array = new Array();
+		private var saveStates:Object;
 		
 		private var timeLabel:Label;
 		
@@ -124,7 +124,7 @@ package  {
 		public var auraMenu:AuraMenu;
 		public var auraButton:AuraButton;
 		
-		private var effectDisplay:EffectDisplay;
+		public var effectDisplay:EffectDisplay;
 		
 		private var specialproperties:PropertiesBackground;
 		
@@ -230,11 +230,8 @@ package  {
 		
 		public function UI2(base:EverybodyEdits, canEdit:Boolean, roomid:String, worldName:String, worldOwner:String, description:String, mapEnabled:Boolean, trialsEnabled:Boolean) {
 			
-			// initialize array for save states
-			for (var s:int = 0; s < 10; s++) {
-				var saveState:TASSaveState = new TASSaveState();
-				saveStates.push(saveState);
-			}
+			// initialize object for save states
+			saveStates = new Object();
 			
 			
 			trialsMode = trialsEnabled;
@@ -764,22 +761,22 @@ package  {
 					goodTicks = bestTime < 0 ? int.MAX_VALUE : bestTime;
 					configureInterface();
 					
-					Global.base.showCampaignTrialDone(new CampaignTrialDone(newRank, newTime, lastRank, lastTime, bestRank < times.length ? times[bestRank] : -1));
+					if(TASGlobal.winscreen) Global.base.showCampaignTrialDone(new CampaignTrialDone(newRank, newTime, lastRank, lastTime, bestRank < times.length ? times[bestRank] : -1));
 					return;
 				} else {
-					Global.base.showCampaignComplete(new CampaignComplete(campaignInfo.campaignName, campaignInfo.tier, campaignInfo.maxTier/*, [], (showBadge) ? badgeImageName : worldImageName*/));
+					if(TASGlobal.winscreen) Global.base.showCampaignComplete(new CampaignComplete(campaignInfo.campaignName, campaignInfo.tier, campaignInfo.maxTier/*, [], (showBadge) ? badgeImageName : worldImageName*/));
 				}
-			} else Global.base.showOnTop(new LevelComplete());
+			} else if(TASGlobal.winscreen) Global.base.showOnTop(new LevelComplete());
 		}
 		
-		public function setEffectIcon(effectId:int, active:Boolean, timeLeft:Number, duration:Number):void {
+		public function setEffectIcon(effectId:int, active:Boolean, arg:Number, duration:Number):void {
 			var effectBrick:ItemBrick = ItemManager.getEffectBrickById(effectId);
 			var bmd:BitmapData = effectBrick.bmd;
 			if (effectId == Config.effectMultijump) return;
 			
 			effectDisplay.removeEffect(effectBrick.id);
 			if (active) {
-				effectDisplay.addEffect(bmd, effectBrick.id, timeLeft, duration);
+				effectDisplay.addEffect(bmd, effectBrick.id, arg, duration);
 			}
 			
 			effectDisplay.update();
@@ -1472,9 +1469,9 @@ package  {
 			if (cmdName == "/help") {
 				//base.showInfo("System Message", "bgcolour\nclear\ncleareffects\ncrown\nedit\neffect\nfly\ngetposition\ngod\nhelp\nhide\ninspect\nkill\nloadlevel\nmap\nreset\nresetall\nresetswitches\nresize\nrespawn\nsave\nshow\nsetteam\nsummon [x y]\nteleport\ntitle")
 				base.showHelpInfo("Command Names",
-				"/bgcolour\n/clear\n/cleareffects\n/crown\n/edit\n/effect\n/fly\n/getposition\n/god",
-				"/help\n/hide\n/inspect\n/kill\n/loadlevel\n/map\n/reset\n/resetall\n/resetswitches",
-				"/resize\n/respawn\n/save\n/show\n/setteam\n/summon\n/teleport\n/title\n/worlds")
+				"/bgcolour\n/clear\n/cleareffects\n/crown\n/edit\n/effect\n/fly\n/getposition\n/god\n\nTAS:\n/winscreen\n/speed\n",
+				"/help\n/hide\n/inspect\n/kill\n/loadlevel\n/map\n/reset\n/resetall\n/resetswitches\n\n/tick\n/state save/load\n/record start/end",
+				"/resize\n/respawn\n/save\n/show\n/setteam\n/summon\n/teleport\n/title\n/worlds\n\n/loadtas\n/playtas speed\n/endtas")
 			}
 			
 			//else if (cmdName == "/uwu") {
@@ -1703,6 +1700,8 @@ package  {
 			}
 			else if (cmdName == "/reset") {
 				Global.playState.player.resetPlayer();
+				Global.playState.ticks = 0;
+				TASGlobal.ticksEnabled = false;
 			} 
 			else if (cmdName == "/resetall") {
 				Global.playState.world.nextSpawnPos = new Array();
@@ -2104,44 +2103,35 @@ package  {
 						break;
 				}
 			}
+			else if (cmdName == "/winscreen") {
+				TASGlobal.winscreen = !TASGlobal.winscreen;
+				base.showInfo2("System Message", "Win screen is now " + (TASGlobal.winscreen ? "enabled." : "disabled."));
+			}
 			else if (cmdName == "/tick") {
 				TASGlobal.ticksEnabled = !TASGlobal.ticksEnabled;
 				base.showInfo2("System Message", "ticks: " + TASGlobal.ticksEnabled.toString());
 			}
 			else if (cmdName == "/state") {
 				if (cmd.length < 3) {
-					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");
-					return;
-				}
-				
-				// try to parse the number
-				var stateNumber: int = parseInt(cmd[2]);
-				
-				if (isNaN(cmd[2])) {
-					base.showInfo2("System Message", "unable to convert number: " + cmd[2]);
-					return;
-				}
-				
-				if (stateNumber > 9 || stateNumber < 0) {
-					base.showInfo2("System Message", "valid state numbers: 0-9");
+					base.showInfo2("System Message", "usage: /state <save or load> <name>");
 					return;
 				}
 				
 				if (cmd[1] == "save") {
-					saveStates[stateNumber].save();
-					base.showInfo2("System Message", "saving state " + stateNumber);
+					saveStates[cmd[2]].save();
+					base.showInfo2("System Message", "saving state '" + cmd[2] + "'");
 				}
 				else if (cmd[1] == "load") {
-					if (saveStates[stateNumber].x == -1) {
+					if (!saveStates[cmd[2]] || saveStates[cmd[2]].x == -1) {
 						base.showInfo2("System Message", "slot has not been saved yet");
 						return;
 					}
 					
-					saveStates[stateNumber].load();
-					base.showInfo2("System Message", "state " + stateNumber + " loaded");
+					saveStates[cmd[2]].load();
+					base.showInfo2("System Message", "state '" + cmd[2] + "' loaded");
 				}
 				else {
-					base.showInfo2("System Message", "usage: /state <save or load> <0-9>");
+					base.showInfo2("System Message", "usage: /state <save or load> <name>");
 					return;
 				}
 			}
@@ -2178,7 +2168,7 @@ package  {
 						fileReference.save(data, "inputs.eetas");
 					}
 					catch (e:Error) {
-						
+						base.showInfo("Error occured when saving file!", e.getStackTrace());
 					}
 				}
 				else {
@@ -2187,11 +2177,17 @@ package  {
 				}
 			}
 			else if (cmdName == "/loadtas") {
-				
+				TASGlobal.loadedTAS = new FileReference();
 				TASGlobal.loadedTAS.browse([new FileFilter("EE TAS (.eetas)", "*.eetas")]);
 				TASGlobal.loadedTAS.addEventListener(Event.SELECT, tasFileSelected);
 			}
 			else if (cmdName == "/playsegment") {
+				var tps:Number = cmd[1] ? parseFloat(cmd[1]) : 1;
+				if (isNaN(tps) || tps <= 0) {
+					base.showInfo2("System Message", "Use a valid speed multiplier");
+					return;
+				}
+				
 				if (TASGlobal.eetasInput == null) {
 					base.showInfo2("System Message", "No .eetas file loaded. execute /loadtas");
 					return;
@@ -2201,11 +2197,20 @@ package  {
 				}
 				// play the tas file but turn ticks off at the end
 				TASGlobal.isSegment = true;
-				TASGlobal.replaying = true;
+				
 				TASGlobal.endofTAS = false;
-				TASGlobal.ticksEnabled = false;
+				TASGlobal.replaying = true;
+				TASGlobal.ticksEnabled = true;
+				
+				Config.physics_ms_per_tick = 10/tps;
 			}
 			else if (cmdName == "/playtas") {
+				var tps:Number = cmd[1] ? parseFloat(cmd[1]) : 1;
+				if (isNaN(tps) || tps <= 0) {
+					base.showInfo2("System Message", "Use a valid speed multiplier");
+					return;
+				}
+				
 				if (TASGlobal.eetasInput == null) {
 					base.showInfo2("System Message", "No .eetas file loaded. execute /loadtas");
 					return;
@@ -2213,18 +2218,33 @@ package  {
 				else {
 					TASGlobal.eetasInput.position = 0;
 				}
+				TASGlobal.isSegment = false;
 				
 				TASGlobal.endofTAS = false;
 				TASGlobal.replaying = true;
 				TASGlobal.ticksEnabled = true;
 				
-				
+				Config.physics_ms_per_tick = 10/tps;
 			}
 			else if (cmdName == "/endtas") {
+				TASGlobal.isSegment = false;
+				
 				TASGlobal.endofTAS = true;
 				TASGlobal.replaying = false;
-				TASGlobal.ticksEnabled = true;
 				
+				TASGlobal.ticksEnabled = false;
+				
+				Config.physics_ms_per_tick = TASGlobal.speedMult;
+			}
+			else if (cmdName == "/speed") {
+				
+				var tps:Number = cmd[1] ? parseFloat(cmd[1]) : 1;
+				if (isNaN(tps) || tps <= 0) {
+					base.showInfo2("System Message", "Use a valid speed multiplier");
+					return;
+				}
+				TASGlobal.speedMult = 10/tps;
+				Config.physics_ms_per_tick = TASGlobal.speedMult;
 			}
 			else {
 				base.showInfo2("System Message", "The command `" + cmdName + "` does not exist.");

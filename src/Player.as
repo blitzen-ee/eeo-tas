@@ -109,17 +109,15 @@ package
 		
 		public var curseTimeStart:Number = 0;
 		public var curseDuration:Number = 0;
+		
 		public var zombieTimeStart:Number = 0;
 		public var zombieDuration:Number = 0;
+		
 		public var fireTimeStart:Number = 0;
 		public var fireDuration:Number = 0;
+		
 		public var poisonTimeStart:Number = 0;
 		public var poisonDuration:Number = 0;
-		
-		public var curseTicks:Number = 0;
-		public var zombieTicks:Number = 0;
-		public var fireTicks:Number = 0;
-		public var poisonTicks:Number = 0;
 		
 		public var cx:int;
 		public var cy:int;
@@ -309,7 +307,7 @@ package
 		private var modoffset:Number = 0;
 		private var modrect:Rectangle;
 		private var auraAnimOffset:Number = 0;
-		private var deadoffset:Number = 0;
+		public var deadoffset:Number = 0;
 		
 		public var low_gravity:Boolean = false;
 		
@@ -326,7 +324,7 @@ package
 		private var _isThrusting:SecureBoolean = new SecureBoolean("IsThrusting");
 		private var _maxThrust:Number = .2;
 		private var _thrustBurnOff:Number = .01;
-		private var _currentThrust:Number = 0;
+		public var _currentThrust:Number = 0;
 		
 		public var isOnFire:Boolean = false;
 		
@@ -374,7 +372,7 @@ package
 			return _mud_drag;
 		}
 		
-		private var slippery:Number = 0;
+		public var slippery:Number = 0;
 		
 		public var multiJumpEffectDisplay:MultiJumpCounter = null;
 		public var jumpCount:int = 0;
@@ -392,16 +390,17 @@ package
 			
 			auraAnimOffset += itemAura.speed;
 			if (auraAnimOffset >= itemAura.frames) auraAnimOffset = 0;
+		
 			
 			if(isDead) deadoffset += .3;				
 			else deadoffset = 0;			
 			
-			if (!isDead && (cursed || zombie || isOnFire || poison)) {
-				var curTime:Number = new Date().time;
-				if (cursed && curseDuration && curTime - curseTimeStart > curseDuration * 1000) killPlayer();
-				if (zombie && zombieDuration && curTime - zombieTimeStart > zombieDuration * 1000) killPlayer();
-				if (isOnFire && fireDuration && curTime - fireTimeStart > fireDuration * 1000) killPlayer();
-				if (poison && poisonDuration && curTime - poisonTimeStart > poisonDuration * 1000) killPlayer();
+			
+			if (!isDead) {
+				if (cursed && curseDuration && state.ticks - curseTimeStart > curseDuration) killPlayer();
+				if (zombie && zombieDuration && state.ticks - zombieTimeStart > zombieDuration) killPlayer();
+				if (isOnFire && fireDuration && state.ticks - fireTimeStart > fireDuration) killPlayer();
+				if (poison && poisonDuration && state.ticks - poisonTimeStart > poisonDuration) killPlayer();
 			}
 			
 			cx = (this.x+8)>>4;
@@ -1173,6 +1172,11 @@ package
 				
 				lastPortal = cp;
 			}
+			
+			if(deadoffset > 16) {
+				respawn();
+				deaths ++;
+			}
 		}
 		
 		//New more advanced update ticket
@@ -1325,11 +1329,6 @@ package
 			
 			
 			if (isDead && deadoffset > 16) {
-				//if (isme) { //on the last frame of the death animation send "death".
-					respawn();
-					deaths ++;
-					//connection.send("death");
-				//}
 				return;
 			}
 			//smiley is not currently on the screen and it's not me
@@ -1370,14 +1369,7 @@ package
 			
 			// Play fire aura animation
 			if (isOnFire) {
-				if ((animoffset >> 0) % 3 == 0) { 
-					if (fireAnimation.frame < fireAnimation.totalFrames - 1) {
-						fireAnimation.frame++;
-					} else {
-						fireAnimation.frame = 0;
-					}
-				}
-				
+				fireAnimation.frame = ((state.ticks / 15) >> 0) % fireAnimation.totalFrames;
 				fireAnimation.RotateDeg = deg;
 				fireAnimation.draw(target, playerX + ((flipGravity >= 1 && flipGravity <= 3) ? -1 : 1), playerY + ((flipGravity == 1) ? 1 : flipGravity == 3 ? -1 : 0));
 			}
@@ -1456,6 +1448,7 @@ package
 			else {
 				levitationAnimation.frame = startFrame;
 			}
+			levitationAnimation.frame = startFrame + (state.ticks) % sequenceLength;
 			levitationAnimation.draw(target, x + ox + animationXPos, y + oy + animationYPos);
 		}
 		
@@ -1731,8 +1724,9 @@ package
 		public function setEffect(effectId:int, active:Boolean, arg:Number = 0, duration:Number = 0):void {
 			//trace((active ? "set" : "reset") + " effect " + effectId);
 			if (duration > 0) {
-				arg += 2 * Global.ping;
+				if (!arg) arg = state.ticks;
 				duration += 2 * Global.ping;
+				duration *= 100;
 			}
 			switch (effectId) {
 				case Config.effectReset: {
@@ -1757,7 +1751,7 @@ package
 				case Config.effectCurse: {
 					cursed = active;
 					if (active) {
-						curseTimeStart = new Date().time - (duration - arg) * 1000;
+						curseTimeStart = arg;
 						curseDuration = duration;
 					}
 					break;
@@ -1765,7 +1759,7 @@ package
 				case Config.effectZombie: {
 					zombie = active;
 					if (active) {
-						zombieTimeStart = new Date().time - (duration - arg) * 1000;
+						zombieTimeStart = arg;
 						zombieDuration = duration;
 					}
 					break;
@@ -1777,7 +1771,7 @@ package
 				case Config.effectFire: {
 					isOnFire = active;
 					if (active) {
-						fireTimeStart = new Date().time - (duration - arg) * 1000;
+						fireTimeStart = arg;
 						fireDuration = duration;
 					}
 					break;
@@ -1793,7 +1787,7 @@ package
 				case Config.effectPoison: {
 					poison = active;
 					if (active) {
-						poisonTimeStart = new Date().time - (duration - arg) * 1000;
+						poisonTimeStart = arg;
 						poisonDuration = duration;
 					}
 					break;
