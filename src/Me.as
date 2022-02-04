@@ -51,11 +51,9 @@ package {
 				
 					spacejustdown = KeyBinding.jump.isJustPressed(true);
 					spacedown = KeyBinding.jump.isDown(true);
-					
-					if (TASGlobal.userInputs != null) {
-						inputs.writeInputs(spacejustdown || spacedown, leftdown, rightdown, updown, downdown);
-					}
-					
+				}
+				if (TASGlobal.userInputs != null) {
+					inputs.writeInputs(spacejustdown || spacedown, leftdown, rightdown, updown, downdown);
 				}
 				
 				
@@ -280,19 +278,19 @@ package {
 							var newCurse:Boolean = world.lookup.getInt(cx, cy) > 0;
 							if (cursed == newCurse || isInvulnerable) break;
 							cursed = newCurse;
-							setEffect(Config.effectCurse, cursed, world.lookup.getInt(cx, cy), world.lookup.getInt(cx, cy));
+							setEffect(Config.effectCurse, cursed, 0, world.lookup.getInt(cx, cy));
 							break;
 						case ItemId.EFFECT_ZOMBIE:
 							var newZombie:Boolean = world.lookup.getInt(cx, cy) > 0;
 							if (zombie == newZombie || isInvulnerable) break;
 							zombie = newZombie;
-							setEffect(Config.effectZombie, zombie, world.lookup.getInt(cx, cy), world.lookup.getInt(cx, cy));
+							setEffect(Config.effectZombie, zombie, 0, world.lookup.getInt(cx, cy));
 							break;
 						case ItemId.EFFECT_POISON: 
 							var newPoison:Boolean = world.lookup.getInt(cx, cy) > 0;
 							if (poison == newPoison || isInvulnerable) break;
 							poison = newPoison;
-							setEffect(Config.effectPoison, poison, world.lookup.getInt(cx, cy), world.lookup.getInt(cx, cy));
+							setEffect(Config.effectPoison, poison, 0, world.lookup.getInt(cx, cy));
 							break;
 						case ItemId.NPC_ZOMBIE: 
 							if (zombie || isInvulnerable) break;
@@ -327,7 +325,7 @@ package {
 						case ItemId.LAVA:
 							if (isOnFire || isInvulnerable) break;
 							isOnFire = true;
-							setEffect(Config.effectFire, isOnFire, 2, 2);
+							setEffect(Config.effectFire, isOnFire, 0, 2);
 							break;
 						case ItemId.WATER:
 						case ItemId.MUD:

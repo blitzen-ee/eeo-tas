@@ -44,9 +44,9 @@ package ui.ingame
 			refresh();
 		}
 		
-		public function addEffect(bmd:BitmapData, id:int, timeLeft:Number = 0, duration:Number = 0):void
+		public function addEffect(bmd:BitmapData, id:int, arg:Number = 0, duration:Number = 0):void
 		{
-			var newEffect:EffectMarker = new EffectMarker(bmd, id, timeLeft, duration);
+			var newEffect:EffectMarker = new EffectMarker(bmd, id, arg, duration);
 			effects.push(newEffect);
 			sortEffects();
 			
@@ -131,16 +131,7 @@ package ui.ingame
 			for (var i:int = 0; i < effects.length; i++)
 			{
 				moveToPosition(effects[i], i, 0.5);
-				if (effects[i].refresh()) {
-					removeEffect(ItemId.EFFECT_CURSE);
-					removeEffect(ItemId.EFFECT_ZOMBIE);
-					removeEffect(ItemId.LAVA);
-					removeEffect(ItemId.EFFECT_POISON);
-					Global.playState.player.setEffect(Config.effectCurse, false);
-					Global.playState.player.setEffect(Config.effectZombie, false);
-					Global.playState.player.setEffect(Config.effectFire, false);
-					Global.playState.player.setEffect(Config.effectPoison, false);
-				}
+				effects[i].refresh()
 			}
 		}
 		

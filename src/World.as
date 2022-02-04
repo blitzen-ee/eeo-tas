@@ -99,13 +99,13 @@ package{
 			"yellow": new SecureBoolean("YellowKey")
 		}
 		
-		private var keysTimer:Object = {
-			"red": new Number(),
-			"green": new Number(),
-			"blue": new Number(),
-			"cyan": new Number(),
-			"magenta": new Number(),
-			"yellow": new Number()
+		public var keysTimer:Object = {
+			"red": new int(),
+			"green": new int(),
+			"blue": new int(),
+			"cyan": new int(),
+			"magenta": new int(),
+			"yellow": new int()
 		}
 		
 		public function getKey(color:String):Boolean {
@@ -117,14 +117,12 @@ package{
 		public function setKey(color:String, state:Boolean, fromqueue:Boolean = false):void {
 			if (!keys[color]) throw new Error("Color '" + color + "' doesn't exist!");
 			if (!(keys[color] is SecureBoolean)) throw new Error("Key '" + color + "' is not type 'SecureBoolean'!");
-			if (fromqueue && ((offset - keysTimer[color]) / 30) >= 5) return;
+			if (fromqueue && ((Global.playState.ticks - keysTimer[color]) / 100) >= 5) return;
 			keys[color].value = state;
-			if (state == true && !fromqueue) keysTimer[color] = offset;
+			if (state == true && !fromqueue) keysTimer[color] = Global.playState.ticks;
 		}
 		
 		public function setTimedoor(state:Boolean):void {
-			hideTimedoorOffset = offset;
-			hideTimedoorTimer = new Date().time;
 			timedoorState = state; 
 		}
 		
@@ -135,8 +133,6 @@ package{
 		public var showCoinGate:int = 0;
 		public var showBlueCoinGate:int = 0;
 		public var showDeathGate:int = 0;
-		public var hideTimedoorOffset:Number = 0;
-		public var hideTimedoorTimer:Number = new Date().time;
 		
 		public override	function update():void{
 			offset+=.3;
@@ -148,12 +144,10 @@ package{
 			}
 			
 			//aaaaaaaaaaaaaaaaaaa
-			if (((offset - hideTimedoorOffset) / 30) >= 5) {
-				setTimedoor(!timedoorState);
-			}
+			setTimedoor((Global.playState.ticks/100) % 10 >= 5);
 			
 			for(var color:String in keys) {
-				if (getKey(color) && ((offset - keysTimer[color]) / 30) >= 5) {
+				if (getKey(color) && ((Global.playState.ticks - keysTimer[color]) / 100) >= 5) {
 					Global.playState.switchKey(color, false);
 				}
 			}
@@ -1063,11 +1057,11 @@ package{
 						
 						//Time doors	
 						case ItemId.TIMEDOOR:{
-							ItemManager.sprDoorsTime.drawPoint(target, point, Math.min( (((offset-hideTimedoorOffset)/30)>>0) , 4) + (timedoorState? 5: 0))
+							ItemManager.sprDoorsTime.drawPoint(target, point, (((Global.playState.ticks/100)>>0) % 5) + (timedoorState? 5: 0))
 							continue;
 						}		
 						case ItemId.TIMEGATE:{
-							ItemManager.sprDoorsTime.drawPoint(target, point,Math.min( (((offset-hideTimedoorOffset)/30)>>0) , 4) + (timedoorState? 0: 5))
+							ItemManager.sprDoorsTime.drawPoint(target, point, (((Global.playState.ticks/100)>>0) % 5) + (timedoorState? 0: 5))
 							continue;
 						}		
 						

@@ -17,7 +17,11 @@ package tas
 		
 		public static var getTASInput:Boolean = false;
 		
-		public static var loadedTAS:FileReference = new FileReference();
+		public static var loadedTAS:FileReference;
+		
+		public static var winscreen:Boolean = true;
+		
+		public static var speedMult:Number = 1;
 	}
 
 }
